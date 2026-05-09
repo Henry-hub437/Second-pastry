@@ -147,9 +147,22 @@ function Nav({ onShowSignIn }: { onShowSignIn: () => void }) {
 }
 
 function Hero() {
+  const [name, setName] = useState('');
+  const [guests, setGuests] = useState('2 People');
+  const [time, setTime] = useState('');
+  const [isReserved, setIsReserved] = useState(false);
+
+  const handleReserve = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !time) {
+      alert("Please fill in your name and preferred time!");
+      return;
+    }
+    setIsReserved(true);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      {/* Background with your provided exterior photo */}
       <div className="absolute inset-0 z-0">
         <img 
           src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=1600" 
@@ -217,31 +230,72 @@ function Hero() {
         >
           <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-2xl relative z-10" id="contact">
             <h3 className="text-2xl font-serif mb-2 text-center">Reserve Your Table</h3>
-            <p className="text-brand-dark/60 text-sm text-center mb-6">Join us for brunch, dinner, or a quick Parisian getaway.</p>
             
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Full Name</label>
-                <input type="text" className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all" placeholder="Enter name" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Guests</label>
-                  <select className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all appearance-none cursor-pointer">
-                    <option>2 People</option>
-                    <option>4 People</option>
-                    <option>6+ People</option>
-                  </select>
+            {isReserved ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-10 space-y-4"
+              >
+                <div className="w-16 h-16 bg-brand-gold text-white rounded-full flex items-center justify-center mx-auto shadow-lg">
+                  <CheckCircle2 size={36} />
                 </div>
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Time</label>
-                  <input type="time" className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all" />
-                </div>
-              </div>
-              <button className="w-full py-4 bg-brand-gold text-white font-bold rounded-full shadow-lg shadow-brand-gold/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-                Check Availability
-              </button>
-            </form>
+                <h4 className="text-2xl font-serif text-brand-dark">Reservation Request Sent!</h4>
+                <p className="text-brand-dark/70 text-sm px-4">
+                  Thank you, <strong>{name}</strong>. We've received your request for <strong>{guests}</strong> at <strong>{time}</strong> and will confirm your table shortly.
+                </p>
+                <button 
+                  onClick={() => { setIsReserved(false); setName(''); setTime(''); }}
+                  className="mt-4 text-xs font-bold uppercase tracking-widest text-brand-gold hover:underline"
+                >
+                  Book another table
+                </button>
+              </motion.div>
+            ) : (
+              <>
+                <p className="text-brand-dark/60 text-sm text-center mb-6">Join us for brunch, dinner, or a quick Parisian getaway.</p>
+                <form className="space-y-4" onSubmit={handleReserve}>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Full Name</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all" 
+                      placeholder="Enter name" 
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Guests</label>
+                      <select 
+                        value={guests}
+                        onChange={(e) => setGuests(e.target.value)}
+                        className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all appearance-none cursor-pointer"
+                      >
+                        <option>2 People</option>
+                        <option>4 People</option>
+                        <option>6+ People</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-widest font-bold mb-1 ml-4">Time</label>
+                      <input 
+                        type="time" 
+                        required
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
+                        className="w-full bg-brand-cream/50 border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-brand-gold transition-all" 
+                      />
+                    </div>
+                  </div>
+                  <button type="submit" className="w-full py-4 bg-brand-gold text-white font-bold rounded-full shadow-lg shadow-brand-gold/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                    Get Reservation
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </motion.div>
       </div>
@@ -397,7 +451,6 @@ function Reviews() {
           ))}
         </div>
 
-        {/* Floating Numbers Graphic */}
         <div className="absolute top-0 right-0 text-[180px] font-serif font-black opacity-[0.03] pointer-events-none select-none -translate-y-1/2 translate-x-1/4">
           4.5
         </div>
@@ -515,7 +568,6 @@ function CTA() {
         </div>
       </div>
       
-      {/* Abstract Background Shapes with Ambiance Photo */}
       <div className="absolute inset-0 opacity-10">
         <img 
           src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=1600" 
@@ -649,7 +701,6 @@ function FlagshipEntrance() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            {/* Soft Glow */}
             <div className="absolute -inset-4 bg-brand-gold/10 blur-3xl -z-10"></div>
           </motion.div>
         </div>
@@ -704,3 +755,4 @@ export default function App() {
     </div>
   );
 }
+
