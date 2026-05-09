@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SignInPage } from './components/SignInPage';
+import { SignInPage } from './SignInPage';
 import { 
   ArrowRight, 
   CheckCircle2, 
