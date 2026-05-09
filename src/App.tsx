@@ -26,6 +26,12 @@ import {
   Facebook
 } from 'lucide-react';
 
+// ========================================================
+// 🛑 YOUR FORMSPREE LINK IS PLACED HERE!
+// ========================================================
+const FORMSPREE_URL = "https://formspree.io/f/xqenyjdy";
+
+
 const SERVICES = [
   {
     title: "Artisan Boulangerie",
@@ -152,13 +158,34 @@ function Hero() {
   const [time, setTime] = useState('');
   const [isReserved, setIsReserved] = useState(false);
 
-  const handleReserve = (e: React.FormEvent) => {
+  const handleReserve = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !time) {
       alert("Please fill in your name and preferred time!");
       return;
     }
-    setIsReserved(true);
+
+    try {
+      const response = await fetch(FORMSPREE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          guests: guests,
+          time: time,
+        }),
+      });
+
+      if (response.ok) {
+        setIsReserved(true);
+      } else {
+        alert("Something went wrong. Please check your Formspree link and try again!");
+      }
+    } catch (error) {
+      alert("Error sending reservation. Please check your internet connection.");
+    }
   };
 
   return (
