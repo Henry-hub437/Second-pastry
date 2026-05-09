@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SignInPage } from './SignInPage';
 import { 
@@ -92,7 +92,12 @@ const FAQS = [
   }
 ];
 
-function Nav({ onShowSignIn }: { onShowSignIn: () => void }) {
+interface NavProps {
+  onShowSignIn: () => void;
+  onScrollToContact: () => void;
+}
+
+function Nav({ onShowSignIn, onScrollToContact }: NavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -124,7 +129,12 @@ function Nav({ onShowSignIn }: { onShowSignIn: () => void }) {
           >
             Member Login
           </button>
-          <a href="#contact" className="bg-brand-dark text-brand-cream px-6 py-3 rounded-full hover:bg-brand-gold transition-all">Reserve a Table</a>
+          <button 
+            onClick={onScrollToContact}
+            className="bg-brand-dark text-brand-cream px-6 py-3 rounded-full hover:bg-brand-gold transition-all"
+          >
+            Reserve a Table
+          </button>
         </div>
 
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
@@ -144,7 +154,12 @@ function Nav({ onShowSignIn }: { onShowSignIn: () => void }) {
             <a href="#about" onClick={() => setIsOpen(false)} className="text-lg font-serif">Why Us</a>
             <a href="#reviews" onClick={() => setIsOpen(false)} className="text-lg font-serif">Testimonials</a>
             <button onClick={() => { setIsOpen(false); onShowSignIn(); }} className="text-lg font-serif text-left">Member Login</button>
-            <a href="#contact" onClick={() => setIsOpen(false)} className="bg-brand-dark text-brand-cream px-6 py-3 rounded-full text-center">Contact Us</a>
+            <button 
+              onClick={() => { setIsOpen(false); onScrollToContact(); }} 
+              className="bg-brand-dark text-brand-cream px-6 py-3 rounded-full text-center"
+            >
+              Contact Us
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -152,7 +167,11 @@ function Nav({ onShowSignIn }: { onShowSignIn: () => void }) {
   );
 }
 
-function Hero() {
+interface HeroProps {
+  contactRef: React.RefObject<HTMLDivElement | null>;
+}
+
+function Hero({ contactRef }: HeroProps) {
   const [name, setName] = useState('');
   const [guests, setGuests] = useState('2 People');
   const [time, setTime] = useState('');
@@ -263,7 +282,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="lg:col-span-5 relative"
         >
-          <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-2xl relative z-10" id="contact">
+          <div ref={contactRef} className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-2xl relative z-10" id="contact">
             <h3 className="text-2xl font-serif mb-2 text-center">Reserve Your Table</h3>
             
             {isReserved ? (
@@ -588,7 +607,11 @@ function FAQ() {
   );
 }
 
-function CTA() {
+interface CTAProps {
+  onScrollToContact: () => void;
+}
+
+function CTA({ onScrollToContact }: CTAProps) {
   return (
     <section className="py-24 bg-brand-gold relative overflow-hidden text-center text-brand-cream">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -598,9 +621,12 @@ function CTA() {
           Open daily until 10:30 PM.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <a href="#contact" className="px-12 py-5 bg-brand-dark text-brand-cream rounded-full font-bold text-lg hover:bg-zinc-900 transition-all shadow-2xl">
+          <button 
+            onClick={onScrollToContact} 
+            className="px-12 py-5 bg-brand-dark text-brand-cream rounded-full font-bold text-lg hover:bg-zinc-900 transition-all shadow-2xl"
+          >
             Book a Reservation
-          </a>
+          </button>
           <button className="px-12 py-5 border border-brand-cream text-brand-cream rounded-full font-bold text-lg hover:bg-brand-cream hover:text-brand-gold transition-all">
             See the Full Menu
           </button>
@@ -750,6 +776,20 @@ function FlagshipEntrance() {
 
 export default function App() {
   const [showSignIn, setShowSignIn] = useState(false);
+  const contactFormRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollToContact = () => {
+    if (showSignIn) {
+      // Switch back to landing page first
+      setShowSignIn(false);
+      // Give React a brief moment to render before scrolling
+      setTimeout(() => {
+        contactFormRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      contactFormRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     if (showSignIn) {
@@ -768,15 +808,18 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Nav onShowSignIn={() => setShowSignIn(true)} />
-            <Hero />
+            <Nav 
+              onShowSignIn={() => setShowSignIn(true)} 
+              onScrollToContact={handleScrollToContact} 
+            />
+            <Hero contactRef={contactFormRef} />
             <Services />
             <WhyUs />
             <Reviews />
             <Gallery />
             <FlagshipEntrance />
             <FAQ />
-            <CTA />
+            <CTA onScrollToContact={handleScrollToContact} />
             <Footer />
           </motion.div>
         ) : (
@@ -793,5 +836,4 @@ export default function App() {
       </AnimatePresence>
     </div>
   );
-}
-
+                }
