@@ -163,7 +163,7 @@ function Nav({ onScrollToContact }: NavProps) {
 }
 
 // ==========================================
-// 4. HERO & RESERVATION COMPONENT (Fixed Setup)
+// 4. HERO & RESERVATION COMPONENT
 // ==========================================
 function Hero({ contactRef }: HeroProps) {
   const [name, setName] = useState('');
